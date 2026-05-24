@@ -1,0 +1,65 @@
+/* ====================================
+   MIGAS CASH FLOW CALCULATOR
+   CSS Design System — Neo-Brutalist
+   ==================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+:root {
+  /* === Neo-Brutalist Palette === */
+  --bg-primary:     #f4f4f0;   /* Bone white / cream */
+  --bg-secondary:   #ffffff;   /* Pure white */
+  --bg-card:        #ffffff;
+  --bg-input:       #ffffff;
+
+  /* === Accent Colors (Acid / Raw) === */
+  --accent-primary:   #ff5500; /* Safety Orange */
+  --accent-secondary: #0033ff; /* Electric Blue */
+  
+  /* === Text & Borders === */
+  --text-primary:   #111111;   /* Pitch black */
+  --text-secondary: #333333;   /* Dark gray */
+  --text-muted:     #666666;   /* Mid gray */
+  --text-light:     #f4f4f0;   /* Light text for dark backgrounds */
+  
+  /* === Status Colors === */
+  --positive:       #009900;   /* Solid Green */
+  --negative:       #ff0000;   /* Pure Red */
+  --warning:        #ffaa00;   /* Solid Orange */
+
+  /* === Borders === */
+  --border:         #111111;
+  --border-thick:   3px solid var(--border);
+  --border-thin:    2px solid var(--border);
+
+  /* === Typography === */
+  --font-display:   'DM Sans', sans-serif;
+  --font-body:      'DM Sans', sans-serif;
+  --font-ui:        'DM Sans', sans-serif;
+  --font-mono:      'IBM Plex Mono', monospace;
+
+  /* === Spacing === */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* === Radius (Strictly Zero for Brutalism) === */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  /* === Transitions === */
+  --transition-fast: 100ms cubic-bezier(0,0,0.2,1);
+  --transition-base: 150ms cubic-bezier(0,0,0.2,1);
+
+  /* === Solid Shadows === */
+  --shadow-brutal: 4px 4px 0px 0px var(--border);
+  --shadow-brutal-lg: 8px 8px 0px 0px var(--border);
+  --shadow-brutal-hover: 2px 2px 0px 0px var(--border);
+}

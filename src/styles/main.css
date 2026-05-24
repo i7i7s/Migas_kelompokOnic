@@ -1,0 +1,426 @@
+/* ====================================
+   MIGAS CASH FLOW CALCULATOR
+   Global Styles — Neo-Brutalist
+   ==================================== */
+
+@import './variables.css';
+
+/* === Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  /* Raw dot matrix background pattern */
+  background-image: radial-gradient(var(--text-muted) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.label-caps {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.monospace {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* === Cards (Raw, Boxy, Solid Shadow) === */
+.card {
+  background: var(--bg-secondary);
+  border: var(--border-thick);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-brutal);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-brutal-lg);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-thick);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === Form Inputs === */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.form-input {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--bg-input);
+  border: var(--border-thin);
+  color: var(--text-primary);
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  outline: none;
+  box-shadow: var(--shadow-brutal);
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+  background: var(--accent-primary);
+  box-shadow: var(--shadow-brutal-hover);
+  transform: translate(2px, 2px);
+}
+
+.form-input.error {
+  background: #ffe5e5;
+  border-color: var(--negative);
+}
+
+select.form-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.form-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--negative);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* === Buttons (Mechanical press effect) === */
+.btn {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-5);
+  border: var(--border-thick);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  box-shadow: var(--shadow-brutal);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px var(--border);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.btn-secondary {
+  background: var(--accent-secondary);
+  color: var(--text-light);
+}
+
+.btn-ghost {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: #e5e5e5;
+}
+
+.btn-danger {
+  background: var(--negative);
+  color: var(--text-light);
+}
+
+.btn-lg {
+  font-size: 18px;
+  padding: var(--space-4) var(--space-6);
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 8px 12px;
+  border: var(--border-thin);
+}
+
+/* === Tables (Receipt Style) === */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  border: var(--border-thick);
+  background: var(--bg-secondary);
+}
+
+.data-table th {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  padding: var(--space-3);
+  text-align: right;
+  border-bottom: var(--border-thick);
+  border-right: var(--border-thin);
+  background: #e5e5e5;
+}
+
+.data-table th:first-child {
+  text-align: left;
+}
+
+.data-table td {
+  padding: var(--space-3);
+  text-align: right;
+  border-bottom: var(--border-thin);
+  border-right: var(--border-thin);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.data-table td:first-child {
+  text-align: left;
+  font-weight: 800;
+  background: #f4f4f0;
+}
+
+.data-table tbody tr:hover td {
+  background: var(--accent-primary);
+}
+
+.data-table .row-total td {
+  background: var(--border) !important;
+  color: var(--text-light) !important;
+  font-weight: 800;
+  border-top: var(--border-thick);
+}
+
+/* === Number Colors === */
+.val-positive { color: var(--positive); }
+.val-negative { color: var(--negative); }
+.val-amber    { color: var(--warning); }
+.val-cyan     { color: var(--accent-secondary); }
+.val-muted    { color: var(--text-muted); }
+
+/* === Badges (Blocky) === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: var(--border-thin);
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.badge-positive {
+  background: var(--positive);
+  color: var(--text-primary);
+}
+
+.badge-negative {
+  background: var(--negative);
+  color: var(--text-light);
+}
+
+.badge-amber {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.badge-cyan {
+  background: var(--accent-secondary);
+  color: var(--text-light);
+}
+
+/* === Human Explainer Tooltip Helper (Warning Sign Style) === */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: var(--border-thin);
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  cursor: help;
+  font-weight: 900;
+  box-shadow: 2px 2px 0px 0px var(--border);
+  transition: transform var(--transition-fast);
+}
+
+.help-icon:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--border);
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  border: var(--border-thick);
+  color: var(--text-primary);
+  text-align: left;
+  padding: var(--space-3);
+  width: 260px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: var(--shadow-brutal);
+  z-index: 1000;
+  pointer-events: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: none;
+}
+
+.tooltip-container:hover .tooltip-box {
+  visibility: visible;
+}
+
+/* === Toggle (Hard switch) === */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background: var(--bg-secondary);
+  border: var(--border-thick);
+  transition: background var(--transition-fast);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-primary);
+  transition: transform var(--transition-fast);
+}
+
+.toggle.active {
+  background: var(--accent-primary);
+}
+
+.toggle.active::after {
+  transform: translateX(24px);
+}
+
+/* === Range Slider (Blocky) === */
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 12px;
+  background: var(--bg-secondary);
+  border: var(--border-thick);
+  outline: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 24px;
+  background: var(--accent-secondary);
+  border: var(--border-thick);
+  cursor: pointer;
+}
+
+/* === Animations (Hard cuts, no soft fades) === */
+.fade-in { 
+  /* Removed soft fade in brutalist theme, just snap into place */
+}
