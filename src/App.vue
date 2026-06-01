@@ -32,6 +32,8 @@
           @rate-change="onRateChange"
         />
 
+
+
         <!-- NCF Table -->
         <ResultTable :rows="result.tabelNCF" />
 
@@ -54,6 +56,14 @@
             />
           </div>
         </div>
+
+        <!-- Analysis & Explanation (Collapsible wrapper inside) -->
+        <AnalysisPanel
+          :tabelNCF="result.tabelNCF"
+          :indicators="indicators"
+          :input="result.input"
+          :discountRate="discountRate"
+        />
 
         <!-- Action -->
         <div class="hasil-actions">
@@ -133,6 +143,7 @@ import ChartRvsNPV from './components/ChartRvsNPV.vue'
 import DepreciationTable from './components/DepreciationTable.vue'
 import ScenarioList from './components/ScenarioList.vue'
 import ComparePanel from './components/ComparePanel.vue'
+import AnalysisPanel from './components/AnalysisPanel.vue'
 
 import { computeNCF } from './composables/useCalculator.js'
 import { computeDepreciation } from './composables/useDepreciation.js'

@@ -4,16 +4,19 @@
     <!-- TOP ACTION BAR -->
     <div class="action-bar">
       <div class="action-left">
-        <button id="btn-load-preset" class="btn btn-ghost btn-sm" @click="showPresetMenu = !showPresetMenu">
-          [ LOAD PRESET ]
+        <span class="case-label">KASUS :</span>
+        <button
+          v-for="p in presets"
+          :key="p.key"
+          :id="`btn-preset-${p.key}`"
+          class="btn btn-sm btn-case"
+          :class="`btn-case-${p.type}`"
+          @click="loadPreset(p)"
+        >
+          {{ p.label }}
         </button>
-        <div v-if="showPresetMenu" class="preset-dropdown">
-          <button v-for="p in presets" :key="p.nama" class="preset-item" @click="loadPreset(p)">
-            <span>> {{ p.nama }}</span>
-          </button>
-        </div>
         <button id="btn-reset" class="btn btn-ghost btn-sm" @click="resetForm">
-          [ RESET FORM ]
+          [ RESET ]
         </button>
       </div>
       <div class="action-right">
@@ -76,7 +79,7 @@
                   v-model.number="form.capital"
                   type="number" min="0"
                   class="form-input" :class="{ error: errors.capital }"
-                  placeholder="13000"
+                  placeholder="195000000"
                 />
               </div>
             </div>
@@ -95,7 +98,7 @@
                   v-model.number="form.nonCapital"
                   type="number" min="0"
                   class="form-input"
-                  placeholder="8000"
+                  placeholder="120000000"
                 />
               </div>
             </div>
@@ -124,7 +127,7 @@
                 v-model.number="form.hargaMinyak"
                 type="number" min="0"
                 class="form-input" :class="{ error: errors.hargaMinyak }"
-                placeholder="32"
+                placeholder="480000"
               />
               <span class="input-unit">/bbl</span>
             </div>
@@ -169,7 +172,7 @@
                 v-model.number="form.opex"
                 type="number" min="0"
                 class="form-input"
-                placeholder="180"
+                placeholder="2700000"
               />
               <span class="input-unit">/tahun</span>
             </div>
@@ -240,8 +243,26 @@
         <div class="card">
           <div class="card-title">LAJU PRODUKSI MINYAK</div>
 
+          <!-- Mode Segmented Button -->
+          <div class="mode-btn-group">
+            <button
+              id="btn-mode-manual"
+              class="mode-btn"
+              :class="{ active: !useDecline }"
+              @click="setMode(false)"
+            >✍️ MANUAL
+            </button>
+            <button
+              id="btn-mode-otomatis"
+              class="mode-btn"
+              :class="{ active: useDecline }"
+              @click="setMode(true)"
+            >📉 DECLINE OTOMATIS
+            </button>
+          </div>
+
           <!-- Hybrid: pilih mulai decline -->
-          <div class="decline-header">
+          <div v-if="useDecline" class="decline-header">
             <div class="form-group flex-1">
               <label class="form-label">
                 Mulai Turun (Decline) Tahun ke-
@@ -295,7 +316,7 @@
                 <span class="input-unit">Mbbl</span>
               </div>
             </div>
-            <div v-if="autoYears.length > 0" class="auto-decline-hint">
+            <div v-if="useDecline && autoYears.length > 0" class="auto-decline-hint">
               <span>! Tahun {{ form.mulaiDecline }}–{{ form.jangkaWaktu }}: Dihitung otomatis menyusut {{ form.declineRate }}% per tahun.</span>
             </div>
           </div>
@@ -391,11 +412,11 @@ const emit = defineEmits(['calculate', 'saved'])
 // ── State ──────────────────────────────────────────
 const form = ref({ ...defaultInput() })
 const errors = ref({})
-const showPresetMenu = ref(false)
 const showSaveDialog = ref(false)
 const saveName = ref('')
 const useEscalation = ref(false)
 const useOpexNaik = ref(false)
+const useDecline = ref(false)
 
 const presets = dummyScenarios
 
@@ -449,6 +470,28 @@ function toggleOpexNaik() {
   }
 }
 
+function toggleDecline() {
+  useDecline.value = !useDecline.value
+  if (!useDecline.value) {
+    form.value.mulaiDecline = null
+    form.value.declineRate = 0
+  } else {
+    form.value.mulaiDecline = Math.min(5, form.value.jangkaWaktu)
+    form.value.declineRate = 3
+  }
+}
+
+function setMode(otomatis) {
+  useDecline.value = otomatis
+  if (!otomatis) {
+    form.value.mulaiDecline = null
+    form.value.declineRate = 0
+  } else {
+    form.value.mulaiDecline = form.value.mulaiDecline || Math.min(5, form.value.jangkaWaktu)
+    form.value.declineRate = form.value.declineRate || 3
+  }
+}
+
 function loadPreset(preset) {
   form.value = {
     ...defaultInput(),
@@ -457,6 +500,7 @@ function loadPreset(preset) {
   }
   useEscalation.value = (preset.hargaEscalation || 0) > 0
   useOpexNaik.value = (preset.opexNaikPersen || 0) > 0
+  useDecline.value = (preset.mulaiDecline || 0) > 0
   errors.value = {}
   showPresetMenu.value = false
 }
@@ -465,6 +509,7 @@ function resetForm() {
   form.value = { ...defaultInput() }
   useEscalation.value = false
   useOpexNaik.value = false
+  useDecline.value = false
   errors.value = {}
 }
 
@@ -532,35 +577,50 @@ function confirmSave() {
   gap: var(--space-3);
 }
 
-.preset-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  z-index: 50;
-  min-width: 240px;
-  box-shadow: var(--shadow-card);
-}
-
-.preset-item {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
+/* Case label */
+.case-label {
   font-family: var(--font-ui);
-  font-size: 13px;
-  padding: var(--space-3) var(--space-4);
-  cursor: pointer;
-  transition: background var(--transition-fast);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.preset-item:hover {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--accent-primary);
+/* Case preset buttons */
+.btn-case {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid;
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.btn-case-untung {
+  color: var(--positive);
+  border-color: var(--positive);
+  background: rgba(16, 185, 129, 0.07);
+}
+.btn-case-untung:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+.btn-case-hybrid {
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  background: rgba(6, 182, 212, 0.07);
+}
+.btn-case-hybrid:hover {
+  background: rgba(6, 182, 212, 0.2);
+}
+.btn-case-rugi {
+  color: var(--negative);
+  border-color: var(--negative);
+  background: rgba(239, 68, 68, 0.07);
+}
+.btn-case-rugi:hover {
+  background: rgba(239, 68, 68, 0.2);
 }
 
 /* Form Grid */
@@ -759,7 +819,42 @@ function confirmSave() {
   gap: var(--space-3);
 }
 
-@media (max-width: 900px) {
-  .form-grid { grid-template-columns: 1fr; }
+/* Mode segmented buttons */
+.mode-btn-group {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: fit-content;
+  margin-bottom: var(--space-4);
+}
+
+.mode-btn {
+  padding: 7px 18px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mode-btn:not(:last-child) {
+  border-right: 1.5px solid var(--border);
+}
+
+.mode-btn.active {
+  background: var(--accent-primary);
+  color: #000;
+  font-weight: 700;
+}
+
+.mode-btn:not(.active):hover {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-primary);
 }
 </style>
