@@ -39,6 +39,7 @@
 
         <!-- Charts -->
         <div class="charts-grid">
+          <ChartProduction :rows="result.tabelNCF" />
           <ChartNCF :rows="result.tabelNCF" />
           <ChartCumulative :rows="result.tabelNCF" :pot="indicators.pot" />
           <ChartRvsNPV :rows="result.tabelNCF" :ror="indicators.ror" />
@@ -140,6 +141,7 @@ import ResultTable from './components/ResultTable.vue'
 import ChartNCF from './components/ChartNCF.vue'
 import ChartCumulative from './components/ChartCumulative.vue'
 import ChartRvsNPV from './components/ChartRvsNPV.vue'
+import ChartProduction from './components/ChartProduction.vue'
 import DepreciationTable from './components/DepreciationTable.vue'
 import ScenarioList from './components/ScenarioList.vue'
 import ComparePanel from './components/ComparePanel.vue'
@@ -277,7 +279,7 @@ function doCompare(ids) {
 
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-5);
 }
 

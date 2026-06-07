@@ -43,14 +43,14 @@
               Jangka Waktu Proyek
               <div class="tooltip-container">
                 <span class="help-icon">?</span>
-                <span class="tooltip-box">Masa aktif operasi lapangan minyak. Di Indonesia, masa kontrak biasanya berkisar 10–25 tahun.</span>
+                <span class="tooltip-box">Masa aktif operasi lapangan minyak. Di Indonesia, masa kontrak biasanya berkisar 10–30 tahun.</span>
               </div>
             </label>
             <div class="input-unit-wrap">
               <input
                 id="input-jangka-waktu"
                 v-model.number="form.jangkaWaktu"
-                type="number" min="1" max="25"
+                type="number" min="1" max="30"
                 class="form-input" :class="{ error: errors.jangkaWaktu }"
                 placeholder="10"
               />
@@ -243,89 +243,80 @@
         <div class="card">
           <div class="card-title">LAJU PRODUKSI MINYAK</div>
 
-          <!-- Mode Segmented Button -->
-          <div class="mode-btn-group">
-            <button
-              id="btn-mode-manual"
-              class="mode-btn"
-              :class="{ active: !useDecline }"
-              @click="setMode(false)"
-            >✍️ MANUAL
-            </button>
-            <button
-              id="btn-mode-otomatis"
-              class="mode-btn"
-              :class="{ active: useDecline }"
-              @click="setMode(true)"
-            >📉 DECLINE OTOMATIS
-            </button>
+          <!-- Jumlah tahun data aktual -->
+          <div class="form-group">
+            <label class="form-label">
+              Jumlah Tahun Data Aktual
+              <div class="tooltip-container">
+                <span class="help-icon">?</span>
+                <span class="tooltip-box">Berapa tahun data produksi nyata yang Anda miliki? Misal: punya data 7 tahun, sisa tahun ke-8 dst dihitung otomatis pakai decline. Tidak boleh melebihi durasi proyek.</span>
+              </div>
+            </label>
+            <div class="input-unit-wrap">
+              <input
+                id="input-tahun-aktual"
+                v-model.number="tahunAktual"
+                type="number" min="1" :max="form.jangkaWaktu"
+                class="form-input"
+                placeholder="4"
+              />
+              <span class="input-unit">tahun</span>
+            </div>
+            <span class="form-hint">
+              Tahun 1–{{ tahunAktual }}: input data aktual &nbsp;|&nbsp;
+              Tahun {{ tahunAktual + 1 }}–{{ form.jangkaWaktu }}: prediksi otomatis
+            </span>
           </div>
 
-          <!-- Hybrid: pilih mulai decline -->
-          <div v-if="useDecline" class="decline-header">
-            <div class="form-group flex-1">
-              <label class="form-label">
-                Mulai Turun (Decline) Tahun ke-
-                <div class="tooltip-container">
-                  <span class="help-icon">?</span>
-                  <span class="tooltip-box">Minyak di bumi terbatas. Tekanan sumur akan melemah alami. Pilih di tahun ke berapa produksi mulai menyusut otomatis.</span>
-                </div>
-              </label>
-              <div class="slider-row">
-                <input
-                  type="range" min="1" :max="form.jangkaWaktu"
-                  v-model.number="form.mulaiDecline"
-                  class="range-slider"
-                  id="slider-mulai-decline"
-                />
-                <span class="slider-value">{{ form.mulaiDecline }}</span>
-              </div>
-              <span class="form-hint">Tahun 1 s.d. {{ form.mulaiDecline - 1 }} diisi manual, selanjutnya berkurang otomatis.</span>
-            </div>
-            <div class="form-group" style="width:140px">
-              <label class="form-label">Laju Turun</label>
-              <div class="input-unit-wrap">
-                <input
-                  id="input-decline-rate"
-                  v-model.number="form.declineRate"
-                  type="number" min="0" max="99"
-                  class="form-input" :class="{ error: errors.declineRate }"
-                  placeholder="3"
-                />
-                <span class="input-unit">%/thn</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Manual production inputs -->
-          <div class="produksi-manual">
+          <!-- Input data aktual per tahun -->
+          <div class="produksi-aktual-grid">
             <div
-              v-for="t in manualYears"
+              v-for="t in tahunAktual"
               :key="t"
               class="produksi-row"
             >
-              <label class="produksi-label">Tahun {{ t }} (Manual)</label>
+              <label class="produksi-label">Tahun {{ t }}</label>
               <div class="input-unit-wrap">
                 <input
-                  :id="`input-prod-${t}`"
-                  v-model.number="form.produksiManual[t-1]"
+                  :id="`input-prod-aktual-${t}`"
+                  v-model.number="form.produksiAktual[t - 1]"
                   type="number" min="0"
                   class="form-input form-input-sm"
-                  :placeholder="`Produksi tahun ${t}`"
+                  :placeholder="`Produksi thn ${t}`"
                 />
                 <span class="input-unit">Mbbl</span>
               </div>
             </div>
-            <div v-if="useDecline && autoYears.length > 0" class="auto-decline-hint">
-              <span>! Tahun {{ form.mulaiDecline }}–{{ form.jangkaWaktu }}: Dihitung otomatis menyusut {{ form.declineRate }}% per tahun.</span>
+          </div>
+
+          <!-- Decline Rate untuk prediksi -->
+          <div class="form-group" v-if="tahunAktual < form.jangkaWaktu">
+            <label class="form-label">
+              Laju Penurunan Prediksi (Decline Rate)
+              <div class="tooltip-container">
+                <span class="help-icon">?</span>
+                <span class="tooltip-box">Persentase penurunan produksi per tahun untuk tahun-tahun di luar data aktual. Dihitung dari nilai terakhir data aktual.</span>
+              </div>
+            </label>
+            <div class="input-unit-wrap">
+              <input
+                id="input-decline-rate"
+                v-model.number="form.declineRate"
+                type="number" min="0" max="99"
+                class="form-input" :class="{ error: errors.declineRate }"
+                placeholder="10"
+              />
+              <span class="input-unit">%/tahun</span>
             </div>
           </div>
 
+          <span v-if="errors.produksi" class="form-error">{{ errors.produksi }}</span>
+          <span v-if="errors.declineRate" class="form-error">{{ errors.declineRate }}</span>
+
           <!-- Preview produksi -->
           <ProductionTable :production="previewProduction" :jangkaWaktu="form.jangkaWaktu" />
-
-          <span v-if="errors.produksi" class="form-error">{{ errors.produksi }}</span>
         </div>
+
 
         <!-- 6. Metode Depresiasi -->
         <div class="card">
@@ -416,40 +407,39 @@ const showSaveDialog = ref(false)
 const saveName = ref('')
 const useEscalation = ref(false)
 const useOpexNaik = ref(false)
-const useDecline = ref(false)
+
+// Berapa tahun data aktual yang diinput — default dari panjang array awal
+const tahunAktual = ref(defaultInput().produksiAktual.length)
 
 const presets = dummyScenarios
 
 // ── Computed ────────────────────────────────────────
 const totalInvestasi = computed(() => (form.value.capital || 0) + (form.value.nonCapital || 0))
 
-const manualYears = computed(() => {
-  const mulai = form.value.mulaiDecline || (form.value.jangkaWaktu + 1)
-  return Array.from({ length: Math.min(mulai - 1, form.value.jangkaWaktu) }, (_, i) => i + 1)
-})
-
-const autoYears = computed(() => {
-  const mulai = form.value.mulaiDecline || null
-  if (!mulai) return []
-  return Array.from({ length: form.value.jangkaWaktu - mulai + 1 }, (_, i) => mulai + i)
-})
-
 const previewProduction = computed(() => computeProduction(form.value))
+
+// Sinkronkan panjang array produksiAktual dengan tahunAktual
+watch(tahunAktual, (newN) => {
+  const n = Math.min(Number(newN) || 1, form.value.jangkaWaktu)
+  const arr = form.value.produksiAktual || []
+  if (arr.length < n) {
+    form.value.produksiAktual = [...arr, ...Array(n - arr.length).fill(0)]
+  } else {
+    form.value.produksiAktual = arr.slice(0, n)
+  }
+})
+
+// Pastikan tahunAktual tidak melebihi jangkaWaktu
+watch(() => form.value.jangkaWaktu, (newJW) => {
+  if (tahunAktual.value > newJW) tahunAktual.value = newJW
+})
 
 const previewDepreciation = computed(() => {
   if (form.value.capital <= 0) return []
   return computeDepreciation(form.value, previewProduction.value)
 })
 
-// Ensure produksiManual array size matches jangkaWaktu
-watch(() => form.value.jangkaWaktu, (newN) => {
-  const arr = form.value.produksiManual
-  if (arr.length < newN) {
-    form.value.produksiManual = [...arr, ...Array(newN - arr.length).fill(0)]
-  } else {
-    form.value.produksiManual = arr.slice(0, newN)
-  }
-})
+
 
 // ── Methods ─────────────────────────────────────────
 function formatMoney(val) {
@@ -470,64 +460,39 @@ function toggleOpexNaik() {
   }
 }
 
-function toggleDecline() {
-  useDecline.value = !useDecline.value
-  if (!useDecline.value) {
-    form.value.mulaiDecline = null
-    form.value.declineRate = 0
-  } else {
-    form.value.mulaiDecline = Math.min(5, form.value.jangkaWaktu)
-    form.value.declineRate = 3
-  }
-}
-
-function setMode(otomatis) {
-  useDecline.value = otomatis
-  if (!otomatis) {
-    form.value.mulaiDecline = null
-    form.value.declineRate = 0
-  } else {
-    form.value.mulaiDecline = form.value.mulaiDecline || Math.min(5, form.value.jangkaWaktu)
-    form.value.declineRate = form.value.declineRate || 3
-  }
-}
-
 function loadPreset(preset) {
-  form.value = {
-    ...defaultInput(),
-    ...preset,
-    produksiManual: [...preset.produksiManual, ...Array(Math.max(0, preset.jangkaWaktu - preset.produksiManual.length)).fill(0)],
-  }
+  form.value = { ...defaultInput(), ...preset }
+  tahunAktual.value = (preset.produksiAktual || []).length
   useEscalation.value = (preset.hargaEscalation || 0) > 0
   useOpexNaik.value = (preset.opexNaikPersen || 0) > 0
-  useDecline.value = (preset.mulaiDecline || 0) > 0
   errors.value = {}
-  showPresetMenu.value = false
 }
 
 function resetForm() {
-  form.value = { ...defaultInput() }
+  const d = defaultInput()
+  form.value = { ...d }
+  tahunAktual.value = d.produksiAktual.length
   useEscalation.value = false
   useOpexNaik.value = false
-  useDecline.value = false
   errors.value = {}
 }
 
 function handleCalculate() {
-  // Basic validation
   const errs = {}
-  if (!form.value.jangkaWaktu || form.value.jangkaWaktu < 1 || form.value.jangkaWaktu > 25)
-    errs.jangkaWaktu = 'Jangka waktu harus antara 1–25 tahun'
+  if (!form.value.jangkaWaktu || form.value.jangkaWaktu < 1 || form.value.jangkaWaktu > 30)
+    errs.jangkaWaktu = 'Jangka waktu harus antara 1–30 tahun'
   if (!form.value.hargaMinyak || form.value.hargaMinyak <= 0)
     errs.hargaMinyak = 'Harga minyak harus lebih dari 0'
-  if (form.value.declineRate >= 100)
-    errs.declineRate = 'Decline rate maksimal 99%'
+  const totalProd = previewProduction.value.reduce((a, b) => a + b, 0)
+  if (totalProd <= 0) errs.produksi = 'Data produksi tidak boleh semua nol'
+  if (tahunAktual.value < form.value.jangkaWaktu) {
+    if (form.value.declineRate < 0 || form.value.declineRate >= 100)
+      errs.declineRate = 'Decline rate harus antara 0–99%'
+  }
   if (form.value.pajakRate < 0 || form.value.pajakRate > 100)
     errs.pajakRate = 'Pajak harus antara 0–100%'
   if (form.value.metodeDep === 'unitOfProduction' && (!form.value.reserveTotal || form.value.reserveTotal <= 0))
     errs.reserveTotal = 'Reserve Total harus diisi untuk metode ini'
-  const totalProd = previewProduction.value.reduce((a, b) => a + b, 0)
-  if (totalProd <= 0) errs.produksi = 'Data produksi tidak boleh semua nol'
 
   errors.value = errs
   if (Object.keys(errs).length > 0) return
@@ -556,6 +521,38 @@ function confirmSave() {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+
+/* Produksi Aktual — input per tahun */
+.produksi-aktual-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-4);
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.produksi-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.produksi-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+.form-input-sm {
+  max-width: 140px !important;
 }
 
 /* Action Bar */

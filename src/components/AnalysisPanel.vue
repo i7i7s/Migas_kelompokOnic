@@ -272,7 +272,7 @@ const factors = computed(() => {
   })
 
   // Depresiasi
-  const depLabel = { straightLine:'Straight Line', decliningBalance:'Declining Balance', doubleDecliningBalance:'Double Declining', unitOfProduction:'Unit of Production', sumOfTheYear:'Sum of the Year' }
+  const depLabel = { straightLine:'Straight Line', decliningBalance:'Declining Balance', doubleDecliningBalance:'Double Declining', unitOfProduction:'Unit of Production' }
   items.push({
     label: 'Metode Depresiasi',
     value: depLabel[input.metodeDep] || input.metodeDep,

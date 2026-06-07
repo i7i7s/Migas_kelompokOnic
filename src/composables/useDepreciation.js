@@ -111,18 +111,15 @@ export function computeDepreciation(input, produksiArray) {
     case 'unitOfProduction':
       if (!reserveTotal || reserveTotal <= 0) return []
       return unitOfProduction(K, produksiArray, reserveTotal)
-    case 'sumOfTheYear':
-      return sumOfTheYear(K, N)
     default:
       return straightLine(K, N)
   }
 }
 
 export const DEPRECIATION_LABELS = {
-  straightLine:         'Sama Rata Tiap Tahun (Straight Line)',
-  decliningBalance:     'Menurun Cepat (Declining Balance)',
+  straightLine:           'Sama Rata Tiap Tahun (Straight Line)',
+  decliningBalance:       'Menurun Cepat (Declining Balance)',
   doubleDecliningBalance: 'Gasspol Hemat Pajak di Awal (Double Declining)',
-  unitOfProduction:     'Mengikuti Hasil Sedotan Minyak (Unit of Production)',
-  sumOfTheYear:         'Menurun Halus (Sum of the Year)',
+  unitOfProduction:       'Mengikuti Hasil Sedotan Minyak (Unit of Production)',
 }
 

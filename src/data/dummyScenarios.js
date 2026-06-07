@@ -1,6 +1,8 @@
 /**
  * Preset skenario dari dokumen referensi PRD
- * Lapangan RISKI — validasi: Total NCF = $31,989.48M, NPV(r=10%) = $13,129.68M
+ * produksiAktual = data nyata yang sudah diketahui
+ * declineRate    = % penurunan per tahun untuk prediksi
+ * jangkaWaktu    = total durasi proyek (aktual + prediksi)
  */
 
 export const dummyScenarios = [
@@ -12,9 +14,9 @@ export const dummyScenarios = [
     jangkaWaktu: 10,
     capital: 97500000,
     nonCapital: 45000000,
-    produksiManual: [215, 425, 740, 825, 710, 525, 350, 150, 130, 110],
-    mulaiDecline: null,
-    declineRate: 0,
+    // Data aktual 5 tahun pertama
+    produksiAktual: [215, 425, 740, 825, 710],
+    declineRate: 20,   // prediksi tahun 6-10
     hargaMinyak: 300000,
     hargaEscalation: 0,
     opex: 2625000,
@@ -29,11 +31,11 @@ export const dummyScenarios = [
     label: '📊 GUNUNG BAKARAN',
     type: 'hybrid',
     nama: 'Lapangan Gunung Bakaran',
-    jangkaWaktu: 10,
+    jangkaWaktu: 20,
     capital: 195000000,
     nonCapital: 120000000,
-    produksiManual: [175, 201, 217, 198],
-    mulaiDecline: 5,
+    // Data aktual 7 tahun pertama (tahun 8-20 prediksi decline)
+    produksiAktual: [175, 201, 217, 198, 185, 172, 160],
     declineRate: 3,
     hargaMinyak: 480000,
     hargaEscalation: 0,
@@ -52,9 +54,9 @@ export const dummyScenarios = [
     jangkaWaktu: 10,
     capital: 300000000,
     nonCapital: 180000000,
-    produksiManual: [40, 60, 80, 70, 55, 40, 25, 15, 10, 5],
-    mulaiDecline: null,
-    declineRate: 0,
+    // Data aktual 3 tahun
+    produksiAktual: [40, 60, 80],
+    declineRate: 20,   // prediksi tahun 4-10
     hargaMinyak: 150000,
     hargaEscalation: 0,
     opex: 5250000,
@@ -71,9 +73,8 @@ export const defaultInput = () => ({
   jangkaWaktu: 10,
   capital: 195000000,
   nonCapital: 120000000,
-  produksiManual: [175, 201, 217, 198, 180, 150, 130, 110, 90, 70],
-  mulaiDecline: null,
-  declineRate: 0,
+  produksiAktual: [175, 201, 217, 198],   // 4 tahun data aktual
+  declineRate: 3,
   hargaMinyak: 480000,
   hargaEscalation: 0,
   opex: 2700000,

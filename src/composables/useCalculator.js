@@ -8,27 +8,31 @@ import { computeDepreciation } from './useDepreciation.js'
 
 /**
  * Hitung array produksi per tahun
- * Tahun 1..mulaiDecline-1 → manual
- * Tahun mulaiDecline..N   → Q(t) = Q(t-1) × (1 - d/100)
+ * Tahun 1..tahunAktual  → pakai produksiAktual[t-1] (data nyata)
+ * Tahun tahunAktual+1.. → Q(t) = Q_last × (1 - d/100)^n (prediksi decline)
+ * tahunAktual = panjang array produksiAktual
  */
 export function computeProduction(input) {
-  const { jangkaWaktu: N, produksiManual, mulaiDecline, declineRate } = input
+  const { jangkaWaktu: N, produksiAktual = [], declineRate } = input
+  const d = (Number(declineRate) || 0) / 100
+  const tahunAktual = produksiAktual.length
   const production = []
 
   for (let t = 1; t <= N; t++) {
-    const idx = t - 1
-    // Jika mulaiDecline null (semua manual) atau t < mulaiDecline → pakai nilai manual
-    if (!mulaiDecline || t < mulaiDecline) {
-      production.push(Number(produksiManual[idx]) || 0)
+    if (t <= tahunAktual) {
+      // Gunakan data aktual
+      production.push(Number(produksiAktual[t - 1]) || 0)
     } else {
-      // Decline dari tahun sebelumnya
-      const prev = production[idx - 1] || 0
-      const d = (Number(declineRate) || 0) / 100
-      production.push(prev * (1 - d))
+      // Prediksi decline dari nilai aktual terakhir
+      const qLast = production[tahunAktual - 1] || 0
+      const n = t - tahunAktual  // jumlah tahun sejak akhir data aktual
+      production.push(qLast * Math.pow(1 - d, n))
     }
   }
   return production
 }
+
+
 
 /**
  * Hitung array harga minyak per tahun
