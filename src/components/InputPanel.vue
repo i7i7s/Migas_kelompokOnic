@@ -408,8 +408,8 @@ const saveName = ref('')
 const useEscalation = ref(false)
 const useOpexNaik = ref(false)
 
-// Berapa tahun data aktual yang diinput — default dari panjang array awal
-const tahunAktual = ref(defaultInput().produksiAktual.length)
+// Berapa tahun data aktual yang diinput — default 1 saat form kosong
+const tahunAktual = ref(1)
 
 const presets = dummyScenarios
 
@@ -435,7 +435,7 @@ watch(() => form.value.jangkaWaktu, (newJW) => {
 })
 
 const previewDepreciation = computed(() => {
-  if (form.value.capital <= 0) return []
+  if (!form.value.capital || form.value.capital <= 0) return []
   return computeDepreciation(form.value, previewProduction.value)
 })
 
@@ -471,7 +471,7 @@ function loadPreset(preset) {
 function resetForm() {
   const d = defaultInput()
   form.value = { ...d }
-  tahunAktual.value = d.produksiAktual.length
+  tahunAktual.value = 1
   useEscalation.value = false
   useOpexNaik.value = false
   errors.value = {}
